@@ -20,9 +20,9 @@ df['Date'] = datetime.date.today()
 #df.to_csv('my data.csv', index = False)
 #print(df)
 
-sql_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER=.; DATABASE=TEST;   Trusted_Connection=yes')
+sql_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER=.; DATABASE=COVID_19;   Trusted_Connection=yes')
 cursor = sql_conn.cursor()
-query = "INSERT INTO COVID ([State],[Total_Confirmed],[Total_Cured],[Total_Death],[Date]) VALUES (?,?,?,?,?);"
+query = "INSERT INTO [dbo].[MOHFW] ([State],[Total_Confirmed],[Total_Cured],[Total_Death],[Date]) VALUES (?,?,?,?,?);"
 
 for index,rows in df.iterrows():
     values = (rows[0],rows[1],rows[2],rows[3],rows[4])
@@ -32,4 +32,5 @@ for index,rows in df.iterrows():
 cursor.close()
 sql_conn.close()
 
-print(df.shape)
+# print(df.shape)
+
