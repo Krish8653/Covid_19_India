@@ -6,25 +6,30 @@ from openpyxl import load_workbook
 # from bs4 import BeautifulSoup
 # from tabulate import tabulate
 
+'''Fetching data from MOHFW website and loading into pandas dataframe'''
 url = 'https://www.mohfw.gov.in/'
 html = requests.get(url).content
 df_list = pd.read_html(html)
 df = df_list[-1]
-#print(df.head())
+
+'''dropping unnecessary columns'''
 df = df.drop(['S. No.'], axis = 1)
 df.columns = ["State", "Total_Confirmed", "Total_Cured", "Total_Death"]
 df = df[df.State != "Total#"]
-# search_for = ['more','States','Including','figures','Cases','State']
+
+'''dropping unnecessary rows containing below words/characters'''
 search_for = ['\*','\#','Cases','State']
 df = df[~df.State.str.contains('|'.join(search_for))]
-df['Date'] = datetime.date.today()
-#df.to_csv('my data.csv', index = False)
-#print(df)
 
+'''adding date column with value today'''
+df['Date'] = datetime.date.today()
+
+'''creatimg connection to local sql server DATABASE'''
 sql_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER=.; DATABASE=COVID_19;   Trusted_Connection=yes')
 cursor = sql_conn.cursor()
 query = "INSERT INTO [dbo].[MOHFW] ([State],[Total_Confirmed],[Total_Cured],[Total_Death],[Date]) VALUES (?,?,?,?,?);"
 
+'''loading data into sql db'''
 for index,rows in df.iterrows():
     values = (rows[0],rows[1],rows[2],rows[3],rows[4])
     #print(values)
@@ -39,6 +44,7 @@ writer = pd.ExcelWriter('D:\\Projects\\Covid_19_India\\Corona_database_extract.x
 writer.book = book
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 
+'''reading the existing data to append new data from the last+1 line'''
 reader = pd.read_excel(open("D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx",'rb'),sheet_name= 'Latest Data')
 select_df.to_excel(writer,sheet_name= 'Latest Data' ,index=False,header=False,startrow=len(reader)+1)
 
