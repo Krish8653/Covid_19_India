@@ -13,7 +13,8 @@ df_list = pd.read_html(html)
 df = df_list[-1]
 
 '''dropping unnecessary columns'''
-df = df.drop(['S. No.'], axis = 1)
+df = df.drop(['S. No.','Active Cases*'], axis = 1)
+print(df.describe())
 df.columns = ["State", "Total_Confirmed", "Total_Cured", "Total_Death"]
 df = df[df.State != "Total#"]
 
