@@ -14,8 +14,7 @@ df = df_list[-1]
 
 '''dropping unnecessary columns'''
 df = df.drop(['S. No.','Active Cases*'], axis = 1)
-print(df.describe())
-df.columns = ["State", "Total_Confirmed", "Total_Cured", "Total_Death"]
+df.columns = ["State", "Total_Cured", "Total_Death", "Total_Confirmed"]
 df = df[df.State != "Total#"]
 
 '''dropping unnecessary rows containing below words/characters'''
@@ -32,7 +31,7 @@ query = "INSERT INTO [dbo].[MOHFW] ([State],[Total_Confirmed],[Total_Cured],[Tot
 
 '''loading data into sql db'''
 for index,rows in df.iterrows():
-    values = (rows[0],rows[1],rows[2],rows[3],rows[4])
+    values = (rows[0],rows[3],rows[1],rows[2],rows[4])
     #print(values)
     cursor.execute(query, values)
     sql_conn.commit()
