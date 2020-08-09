@@ -2,9 +2,10 @@ import requests, json
 import numpy as np
 import pandas as pd
 from pandas.io.json import json_normalize
-from datetime import timedelta
+# from datetime import timedelta
 import datetime
 import pyodbc
+from openpyxl import load_workbook
 
 url = 'https://www.mohfw.gov.in/data/datanew.json'
 res = requests.get(url)
@@ -17,20 +18,20 @@ with open("data.json") as f:
 df_in = pd.DataFrame.from_dict(pd.json_normalize(data), orient='columns')
 
 
-df = df_in.drop(['sno', 'new_active', 'new_positive', 'new_cured', 'new_death', 'state_code'], axis = 1)
+df = df_in.drop(['sno', 'active', 'positive', 'cured', 'death', 'state_code'], axis = 1)
 
 '''dropping unnecessary rows containing below words/characters'''
 df['state_name'].replace('', np.nan, inplace = True)
 df.dropna(subset =['state_name'], inplace = True)
 
 '''adding date column with value today'''
-df['Date'] = datetime.date.today()- timedelta(days=1)
+df['Date'] = datetime.date.today()
 
 # print(df)
 
-df.rename(columns={"positive": "Confirmed"}, inplace= True)
-
-print(df)
+df.rename(columns={"new_positive": "Confirmed"}, inplace= True)
+df.state_name[df.state_name == 'Telengana'] = 'Telangana'
+# print(df)
 
 '''creatimg connection to local sql server DATABASE'''
 sql_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER=.; DATABASE=COVID_19;   Trusted_Connection=yes')
@@ -45,7 +46,7 @@ for index,rows in df.iterrows():
     sql_conn.commit()
 
 '''UPDATING THE Corona_database_extract.xlsx file'''
-select_query = "Select [State],[Total_Confirmed],[Total_Cured],[Total_Death],FORMAT([Date],'dd-MM-yyyy',[Total_confirmed]) AS DATE,[Confirmed_cases_on_this_day],[Recovered_cases_on_this_day],[Death_cases_on_this_day] from [dbo].[MOHFW]  where [Date] = CAST(Getdate() AS DATE);"
+select_query = "Select [State],[Total_Confirmed],[Total_Cured],[Total_Death],FORMAT([Date],'dd-MM-yyyy') AS DATE,[Total_confirmed],[Confirmed_cases_on_this_day],[Recovered_cases_on_this_day],[Death_cases_on_this_day] from [dbo].[MOHFW]  where [Date] = CAST(Getdate() AS DATE);"
 select_df = pd.read_sql(select_query, sql_conn)
 book = load_workbook("D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx")
 writer = pd.ExcelWriter('D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx', engine= 'openpyxl') # pylint: disable=abstract-class-instantiated

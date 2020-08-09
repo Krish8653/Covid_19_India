@@ -64,7 +64,11 @@ JOIN CONFIRMED_CASES C ON CON_DATE_ID = D.DATE_ID AND CON_STATE_ID = S.STATE_ID
 JOIN CURED_CASES CU ON CUR_DATE_ID = D.DATE_ID AND CUR_STATE_ID = S.STATE_ID
 JOIN DEATH_CASES DE ON DEATH_DATE_ID = D.DATE_ID AND DEATH_STATE_ID = S.STATE_ID
 WHERE D.DATE_ID NOT IN (SELECT DISTINCT (ACT_DATE_ID) FROM ACTIVE_CASES);
-END;
 GO
 
 
+--UPDATE MOHFW
+--SET  Confirmed_cases_on_this_day = Total_Confirmed
+--	,Recovered_cases_on_this_day = Total_Cured
+--	,Death_cases_on_this_day = Total_Death
+--WHERE Confirmed_cases_on_this_day IS NULL
