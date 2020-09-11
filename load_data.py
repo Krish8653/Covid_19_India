@@ -33,6 +33,7 @@ df.rename(columns={"new_positive": "Confirmed"}, inplace= True)
 df.state_name[df.state_name == 'Telengana'] = 'Telangana'
 # print(df)
 
+
 '''creatimg connection to local sql server DATABASE'''
 sql_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER=.; DATABASE=COVID_19;   Trusted_Connection=yes')
 cursor = sql_conn.cursor()
