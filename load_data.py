@@ -10,10 +10,10 @@ from openpyxl import load_workbook
 url = 'https://www.mohfw.gov.in/data/datanew.json'
 res = requests.get(url)
 
-with open("data.json", "w") as f:
+with open("D:\\Projects\\Covid_19_India\\data.json", "w") as f:
     json.dump(res.json(), f)
 
-with open("data.json") as f:
+with open("D:\\Projects\\Covid_19_India\\data.json") as f:
     data = json.load(f)
 df_in = pd.DataFrame.from_dict(pd.json_normalize(data), orient='columns')
 
@@ -27,7 +27,7 @@ df.dropna(subset =['state_name'], inplace = True)
 '''adding date column with value today'''
 df['Date'] = datetime.date.today()
 
-# print(df)
+print(df)
 
 df.rename(columns={"new_positive": "Confirmed"}, inplace= True)
 df.state_name[df.state_name == 'Telengana'] = 'Telangana'
