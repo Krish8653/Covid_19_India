@@ -27,7 +27,7 @@ df.dropna(subset =['state_name'], inplace = True)
 '''adding date column with value today'''
 df['Date'] = datetime.date.today()
 
-print(df)
+# print(df)
 
 df.rename(columns={"new_positive": "Confirmed"}, inplace= True)
 df.state_name[df.state_name == 'Telengana'] = 'Telangana'
