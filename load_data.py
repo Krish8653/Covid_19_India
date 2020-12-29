@@ -47,19 +47,24 @@ for index,rows in df.iterrows():
     sql_conn.commit()
 
 '''UPDATING THE Corona_database_extract.xlsx file'''
-select_query = "Select [State],[Total_Confirmed],[Total_Cured],[Total_Death],FORMAT([Date],'dd-MM-yyyy') AS DATE,[Total_confirmed],[Confirmed_cases_on_this_day],[Recovered_cases_on_this_day],[Death_cases_on_this_day] from [dbo].[MOHFW]  where [Date] = CAST(Getdate() AS DATE);"
+select_query = "Select [State],[Total_Confirmed],[Total_Cured],[Total_Death],FORMAT([Date],'dd-MM-yyyy') AS DATE,[Total_confirmed],[Confirmed_cases_on_this_day],[Recovered_cases_on_this_day],[Death_cases_on_this_day] from [dbo].[MOHFW] where [Date] = CAST(Getdate() AS DATE) order by FORMAT([Date],'dd-MM-yyyy');"
 select_df = pd.read_sql(select_query, sql_conn)
-book = load_workbook("D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx")
-writer = pd.ExcelWriter('D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx', engine= 'openpyxl') # pylint: disable=abstract-class-instantiated
-writer.book = book
-writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+
+# commenting below code as output is written to csv instead of excel
+# book = load_workbook("D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx")
+# writer = pd.ExcelWriter('D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx', engine= 'openpyxl') # pylint: disable=abstract-class-instantiated
+# writer.book = book
+# writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+
 
 '''reading the existing data to append new data from the last+1 line'''
-reader = pd.read_excel(open("D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx",'rb'),sheet_name= 'Latest Data')
-select_df.to_excel(writer,sheet_name= 'Latest Data' ,index=False,header=False,startrow=len(reader)+1)
+# reader = pd.read_excel(open("D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx",'rb'),sheet_name= 'Latest Data')
+# select_df.to_excel(writer,sheet_name= 'Latest Data' ,index=False,header=False,startrow=len(reader)+1)
+csv_output_path = 'corona_database_extract.csv'
+select_df.to_csv(csv_output_path, mode = 'a', header = True, index = False)
 
-writer.save()
-writer.close()
+# writer.save()
+# writer.close()
 
 cursor.close()
 sql_conn.close()
