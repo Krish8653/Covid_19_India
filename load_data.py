@@ -56,12 +56,13 @@ select_df = pd.read_sql(select_query, sql_conn)
 # writer.book = book
 # writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 
+# print(select_df)
 
 '''reading the existing data to append new data from the last+1 line'''
 # reader = pd.read_excel(open("D:\\Projects\\Covid_19_India\\Corona_database_extract.xlsx",'rb'),sheet_name= 'Latest Data')
 # select_df.to_excel(writer,sheet_name= 'Latest Data' ,index=False,header=False,startrow=len(reader)+1)
-csv_output_path = 'corona_database_extract.csv'
-select_df.to_csv(csv_output_path, mode = 'a', header = True, index = False)
+csv_output_path = 'D:\\Projects\\Covid_19_India\\corona_database_extract.csv'
+select_df.to_csv(csv_output_path, mode = 'a', header = False, index = False)
 
 # writer.save()
 # writer.close()
