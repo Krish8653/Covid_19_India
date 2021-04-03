@@ -2,7 +2,6 @@ import requests, json
 import numpy as np
 import pandas as pd
 from pandas.io.json import json_normalize
-# from datetime import timedelta
 import datetime
 import pyodbc
 from openpyxl import load_workbook
@@ -10,14 +9,7 @@ from openpyxl import load_workbook
 url = 'https://www.mohfw.gov.in/data/datanew.json'
 res = requests.get(url)
 
-with open("D:\\Projects\\Covid_19_India\\data.json", "w") as f:
-    json.dump(res.json(), f)
-
-with open("D:\\Projects\\Covid_19_India\\data.json") as f:
-    data = json.load(f)
-df_in = pd.DataFrame.from_dict(pd.json_normalize(data), orient='columns')
-
-
+df_in = pd.DataFrame.from_dict(pd.json_normalize(res.json()), orient='columns')
 df = df_in.drop(['sno', 'active', 'positive', 'cured', 'death', 'state_code'], axis = 1)
 
 '''dropping unnecessary rows containing below words/characters'''
@@ -26,13 +18,8 @@ df.dropna(subset =['state_name'], inplace = True)
 
 '''adding date column with value today'''
 df['Date'] = datetime.date.today()
-
-# print(df)
-
 df.rename(columns={"new_positive": "Confirmed"}, inplace= True)
 df.state_name[df.state_name == 'Telengana'] = 'Telangana'
-# print(df)
-
 
 '''creatimg connection to local sql server DATABASE'''
 sql_conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER=.; DATABASE=COVID_19;   Trusted_Connection=yes')
